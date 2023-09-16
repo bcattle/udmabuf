@@ -2180,10 +2180,17 @@ static void udmabuf_static_device_create(const char* name, int id, unsigned int 
         udmabuf_platform_device_create(name, id, size, 0);
 }
 
+#if UINTPTR_MAX == 0xffffffffffffffff
 #define DEFINE_UDMABUF_STATIC_DEVICE_PARAM(__num)                        \
     static ulong       udmabuf ## __num = 0;                               \
     module_param(    udmabuf ## __num, ulong, S_IRUGO);                    \
     MODULE_PARM_DESC(udmabuf ## __num, DRIVER_NAME #__num " buffer size");
+#else
+#define DEFINE_UDMABUF_STATIC_DEVICE_PARAM(__num)                        \
+    static int       udmabuf ## __num = 0;                               \
+    module_param(    udmabuf ## __num, int, S_IRUGO);                    \
+    MODULE_PARM_DESC(udmabuf ## __num, DRIVER_NAME #__num " buffer size");
+#endif
 
 #define CALL_UDMABUF_STATIC_DEVICE_CREATE(__num)                         \
     if (udmabuf ## __num != 0) {                                         \
